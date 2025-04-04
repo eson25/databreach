@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pwned Checker</title>
+</head>
+<body>
+    <h1>Check if your Email and Password are Pwned</h1>
+    
+    <input type="text" id="email" placeholder="Enter your email">
+    <button onclick="checkEmail()">Check Email</button>
+    <p id="emailResult"></p>
+
+    <input type="password" id="password" placeholder="Enter your password">
+    <button onclick="checkPassword()">Check Password</button>
+    <p id="passwordResult"></p>
+
+    <h2>Most Breached Companies</h2>
+    <button onclick="getLeaderboard()">Refresh Leaderboard</button>
+    <ul id="leaderboard"></ul>
+
+    <script>
+        async function checkEmail() {
+            const email = document.getElementById("email").value;
+            const response = await fetch(`/check_email/${email}`);
+            const data = await response.json();
+            document.getElementById("emailResult").innerText = `Breaches: ${data.breaches.join(", ") || "None"}`;
+        }
+
+        async function checkPassword() {
+            const password = document.getElementById("password").value;
+            const response = await fetch(`/check_password/${password}`);
+            const data = await response.json();
+            document.getElementById("passwordResult").innerText = data.password_leaked ? "Your password has been leaked!" : "Safe password!";
+        }
+
+        async function getLeaderboard() {
+            const response = await fetch(`/leaderboard`);
+            const data = await response.json();
+            document.getElementById("leaderboard").innerHTML = data.most_breached_companies.map(c => `<li>${c[0]} - ${c[1]} times</li>`).join("");
+        }
+    </script>
+</body>
+</html>
